@@ -175,7 +175,7 @@ class PurchaseRequest extends AbstractRequest
             'Content-Type' => 'application/x-www-form-urlencoded'
         );
         $httpResponse = $this->httpClient->request('POST', $this->endpoint, $headers, $document->saveXML());
-        return $this->response = new Response($this, $httpResponse->getBody()->getContents());
+        return $this->response = new Response($this, $httpResponse);
     }
 
     public function getBank()

@@ -5,6 +5,7 @@ use Omnipay\Common\Message\AbstractResponse;
 use Omnipay\Common\Message\RequestInterface;
 use Omnipay\Common\Message\RedirectResponseInterface;
 use Omnipay\Common\Exception\InvalidResponseException;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * NestPay Response
@@ -15,23 +16,26 @@ use Omnipay\Common\Exception\InvalidResponseException;
  */
 class Response extends AbstractResponse implements RedirectResponseInterface
 {
+    protected $statusCode;
 
     /**
      * Constructor
      *
-     * @param RequestInterface $request
-     * @param string $data
-     *            / response data
+     * @param RequestInterface  $request
+     * @param ResponseInterface $response
      * @throws InvalidResponseException
      */
-    public function __construct(RequestInterface $request, $data)
+    public function __construct(RequestInterface $request, ResponseInterface $response)
     {
-        $this->request = $request;
         try {
-            $this->data = (array) simplexml_load_string($data);
+            $data = (array) simplexml_load_string((string) $response->getBody());
         } catch (\Exception $ex) {
             throw new InvalidResponseException();
         }
+
+        $this->statusCode = $response->getStatusCode();
+
+        parent::__construct($request, $data);
     }
 
     /**
@@ -61,11 +65,11 @@ class Response extends AbstractResponse implements RedirectResponseInterface
     /**
      * Get a code describing the status of this response.
      *
-     * @return string|null code
+     * @return int code
      */
     public function getCode()
     {
-        return $this->isSuccessful() ? $this->data["AuthCode"] : parent::getCode();
+        return $this->statusCode;
     }
 
     /**
