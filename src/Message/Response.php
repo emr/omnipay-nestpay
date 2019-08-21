@@ -110,6 +110,16 @@ class Response extends AbstractResponse implements RedirectResponseInterface
     }
 
     /**
+     * Get error code
+     *
+     * @return string
+     */
+    public function getErrorCode()
+    {
+        return (string) $this->data["Extra"]->ERRORCODE;
+    }
+
+    /**
      * Get Redirect url
      *
      * @return string
